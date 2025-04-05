@@ -1,12 +1,10 @@
-
+// Revision.java
 public class Revision {
     private String id;
     private String parentId;
     private String timestamp;
     private String comment;
     private String text;
-
-    // Additional fields such as contributor can be added here.
 
     // Getters and setters
     public String getId() { return id; }

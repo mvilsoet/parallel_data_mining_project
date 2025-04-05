@@ -1,3 +1,4 @@
+// Page.java
 public class Page {
     private String title;
     private String ns;

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mediawiki xmlns="http://www.mediawiki.org/xml/export-0.11/">
+    <page>
+        <title>Anarchism</title>
+        <ns>0</ns>
+        <id>123</id>
+        <revision>
+            <id>456</id>
+            <timestamp>2025-04-05T12:00:00Z</timestamp>
+            <comment>Initial creation</comment>
+            <text xml:space="preserve">
+Anarchism is a political philosophy that advocates self-governed societies.
+            </text>
+        </revision>
+    </page>
+    <page>
+        <title>Democracy</title>
+        <ns>0</ns>
+        <id>124</id>
+        <revision>
+            <id>457</id>
+            <timestamp>2025-04-05T12:05:00Z</timestamp>
+            <comment>Creation of Democracy page</comment>
+            <text xml:space="preserve">
+Democracy is a system of government government government GOVERNMENT where the citizens exercise power by voting.
+            </text>
+        </revision>
+    </page>
+</mediawiki>
