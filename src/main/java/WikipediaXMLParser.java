@@ -1,3 +1,6 @@
+import model.Page;
+import model.Revision;
+
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;

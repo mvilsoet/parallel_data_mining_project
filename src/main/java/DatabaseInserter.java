@@ -1,3 +1,5 @@
+import model.PageAnalysis;
+
 import java.util.ArrayList;
 import java.util.List;
 

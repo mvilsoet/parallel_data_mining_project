@@ -1,4 +1,6 @@
-// Revision.java
+package model;
+
+// model.Revision.java
 public class Revision {
     private String id;
     private String parentId;
@@ -24,7 +26,7 @@ public class Revision {
 
     @Override
     public String toString() {
-        return "Revision [id=" + id + ", parentId=" + parentId + ", timestamp=" + timestamp
+        return "model.Revision [id=" + id + ", parentId=" + parentId + ", timestamp=" + timestamp
                 + ", comment=" + comment + ", text=" + (text != null && text.length() > 50 ? text.substring(0, 50) + "..." : text) + "]";
     }
 }

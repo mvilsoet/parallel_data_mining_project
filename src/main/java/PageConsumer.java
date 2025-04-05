@@ -1,3 +1,6 @@
+import model.Page;
+import model.PageAnalysis;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,7 +49,7 @@ public class PageConsumer implements Runnable {
                             }
                         });
                     }
-                    // Create a PageAnalysis object and "insert" it into the database
+                    // Create a model.PageAnalysis object and "insert" it into the database
                     PageAnalysis analysis = new PageAnalysis(page.getTitle(), tf);
                     dbInserter.insert(analysis);
                 }

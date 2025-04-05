@@ -1,3 +1,5 @@
+package model;
+
 import java.util.Map;
 
 public class PageAnalysis {
@@ -19,6 +21,6 @@ public class PageAnalysis {
 
     @Override
     public String toString() {
-        return "PageAnalysis [pageTitle=" + pageTitle + ", termFrequencies=" + termFrequencies + "]";
+        return "model.PageAnalysis [pageTitle=" + pageTitle + ", termFrequencies=" + termFrequencies + "]";
     }
 }

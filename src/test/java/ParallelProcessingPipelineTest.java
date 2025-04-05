@@ -1,3 +1,5 @@
+import model.Page;
+import model.PageAnalysis;
 import org.junit.jupiter.api.Test;
 import java.io.InputStream;
 import java.util.List;
@@ -36,7 +38,7 @@ public class ParallelProcessingPipelineTest {
         assertEquals("Anarchism", firstPage.getTitle(), "First page title should be 'Anarchism'");
         assertEquals("123", firstPage.getId(), "First page id should be '123'");
         assertNotNull(firstPage.getRevision(), "First page should have a revision");
-        assertEquals("456", firstPage.getRevision().getId(), "Revision id should be '456'");
+        assertEquals("456", firstPage.getRevision().getId(), "model.Revision id should be '456'");
     }
 
     /**

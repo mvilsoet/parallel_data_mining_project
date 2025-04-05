@@ -1,3 +1,5 @@
+import model.Page;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.*;

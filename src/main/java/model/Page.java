@@ -1,4 +1,6 @@
-// Page.java
+package model;
+
+// model.Page.java
 public class Page {
     private String title;
     private String ns;
@@ -24,7 +26,7 @@ public class Page {
 
     @Override
     public String toString() {
-        return "Page [title=" + title + ", ns=" + ns + ", id=" + id
+        return "model.Page [title=" + title + ", ns=" + ns + ", id=" + id
                 + ", redirect=" + redirect + ", revision=" + revision + "]";
     }
 }
