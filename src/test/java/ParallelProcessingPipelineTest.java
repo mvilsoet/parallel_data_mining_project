@@ -2,6 +2,7 @@ import model.Page;
 import model.PageAnalysis;
 import org.junit.jupiter.api.Test;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -82,5 +83,21 @@ public class ParallelProcessingPipelineTest {
             assertFalse(analysis.getTermFrequencies().isEmpty(), "Term frequencies for page '" + analysis.getPageTitle() + "' should not be empty");
             System.out.println("Analysis for " + analysis.getPageTitle() + ": " + analysis.getTermFrequencies());
         }
+    }
+
+    @Test
+    public void testDatabaseInsert() throws Exception {
+        DatabaseInserter inserter = new DatabaseInserter();
+
+        Map<String, Integer> termFrequencies = new HashMap<>();
+        termFrequencies.put("test", 1);
+        PageAnalysis analysis = new PageAnalysis("TestPage", termFrequencies);
+
+        boolean success = inserter.insert(analysis);
+        assertTrue(success, "Insert should return success");
+
+        List<PageAnalysis> insertedPages = inserter.getInsertedPages();
+        assertEquals(1, insertedPages.size(), "There should be exactly 1 inserted page");
+        assertEquals("TestPage", insertedPages.get(0).getPageTitle(), "Page title should be 'TestPage'");
     }
 }
