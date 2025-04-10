@@ -10,7 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class ParallelProcessingPipelineTest {
 
-    private static final String TEST_XML_FILE = "testPages.xml";
+    private static final String TEST_XML_FILE = "testPages.xml.bz2";
+    private static final String TEST_XML_FILE_UNC = "testPages.xml";
 
     /**
      * Helper method to load the XML resource as a new InputStream.
@@ -23,11 +24,20 @@ public class ParallelProcessingPipelineTest {
     }
 
     /**
+    * Overloaded helper method to load a specific XML resource (e.g., uncompressed) as a new InputStream.
+    */
+    private InputStream loadTestXml(String resourceName) {
+       InputStream input = getClass().getClassLoader().getResourceAsStream(resourceName);
+       assertNotNull(input, "Test XML file '" + resourceName + "' must be present in the resources");
+       return input;
+    }
+
+    /**
      * Test that the XML parser correctly parses pages.
      */
     @Test
     public void testXMLParserShouldParsePagesCorrectly() throws Exception {
-        InputStream input = loadTestXml();
+        InputStream input = loadTestXml(TEST_XML_FILE_UNC);  // Load the uncompressed XML file.
         WikipediaXMLParser parser = new WikipediaXMLParser();
         List<Page> pages = parser.parse(input);
 
@@ -39,7 +49,7 @@ public class ParallelProcessingPipelineTest {
         assertEquals("Anarchism", firstPage.getTitle(), "First page title should be 'Anarchism'");
         assertEquals("123", firstPage.getId(), "First page id should be '123'");
         assertNotNull(firstPage.getRevision(), "First page should have a revision");
-        assertEquals("456", firstPage.getRevision().getId(), "model.Revision id should be '456'");
+        assertEquals("456", firstPage.getRevision().getId(), "Revision id should be '456'");
     }
 
     /**

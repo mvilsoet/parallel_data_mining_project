@@ -1,5 +1,5 @@
 import model.Page;
-
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.*;
@@ -21,26 +21,29 @@ public class ParallelProcessingPipeline {
     }
 
     public void runPipeline(InputStream input) throws Exception {
-        int consumerCount = ((ThreadPoolExecutor) consumerPool).getCorePoolSize();
-        // Start consumer threads.
-        for (int i = 0; i < consumerCount; i++) {
-            consumerPool.submit(new PageConsumer(queue, dbInserter, globalDocFrequencies));
-        }
+        // Wrap the input stream with BZip2 decompression so that you can read .xml.bz2 files.
+        try (BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(input)) {
+            int consumerCount = ((ThreadPoolExecutor) consumerPool).getCorePoolSize();
+            // Start consumer threads.
+            for (int i = 0; i < consumerCount; i++) {
+                consumerPool.submit(new PageConsumer(queue, dbInserter, globalDocFrequencies));
+            }
 
-        // Producer: parse pages from the input stream.
-        WikipediaXMLParser parser = new WikipediaXMLParser();
-        List<Page> pages = parser.parse(input);
-        for (Page page : pages) {
-            queue.put(page);
-        }
+            // Producer: parse pages from the decompressed input stream.
+            WikipediaXMLParser parser = new WikipediaXMLParser();
+            List<Page> pages = parser.parse(bzIn);
+            for (Page page : pages) {
+                queue.put(page);
+            }
 
-        // Insert a poison pill for each consumer to signal completion.
-        for (int i = 0; i < consumerCount; i++) {
-            queue.put(POISON_PILL);
-        }
+            // Insert a poison pill for each consumer to signal completion.
+            for (int i = 0; i < consumerCount; i++) {
+                queue.put(POISON_PILL);
+            }
 
-        consumerPool.shutdown();
-        consumerPool.awaitTermination(10, TimeUnit.MINUTES);
+            consumerPool.shutdown();
+            consumerPool.awaitTermination(10, TimeUnit.MINUTES);
+        }
     }
 
     public DatabaseInserter getDatabaseInserter() {
