@@ -86,7 +86,7 @@ public class ParallelProcessingPipelineTest {
     }
 
     @Test
-    public void testDatabaseInsert() throws Exception {
+    public void testDatabaseInsert() {
         DatabaseInserter inserter = new DatabaseInserter();
 
         Map<String, Integer> termFrequencies = new HashMap<>();
