@@ -1,5 +1,4 @@
 import model.Page;
-import model.PageAnalysis;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 
 import java.io.InputStream;

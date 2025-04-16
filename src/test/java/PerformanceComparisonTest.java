@@ -16,7 +16,6 @@ public class PerformanceComparisonTest {
      *  1) Sequential (1 consumer)
      *  2) Some parallel (e.g., 4 consumers)
      *  3) Maximum parallel (number of available processors)
-     *
      * Print out the timing results for comparison.
      */
     @Test
@@ -45,9 +44,9 @@ public class PerformanceComparisonTest {
         long endTime = System.currentTimeMillis();
         long duration = endTime - startTime;
 
-        System.out.println(String.format(
-                "%s run with %d consumer thread(s) took %d ms",
+        System.out.printf(
+                "%s run with %d consumer thread(s) took %d ms%n",
                 label, numConsumers, duration
-        ));
+        );
     }
 }
