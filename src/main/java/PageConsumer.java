@@ -13,12 +13,15 @@ public class PageConsumer implements Runnable {
     private final BlockingQueue<Page> queue;
     private final DatabaseInserter dbInserter;
     private final ConcurrentHashMap<String, AtomicInteger> globalDocFrequencies;
+    private final AtomicInteger processedPages; // shared progress counter
 
     public PageConsumer(BlockingQueue<Page> queue, DatabaseInserter dbInserter,
-                        ConcurrentHashMap<String, AtomicInteger> globalDocFrequencies) {
+                        ConcurrentHashMap<String, AtomicInteger> globalDocFrequencies,
+                        AtomicInteger processedPages) {
         this.queue = queue;
         this.dbInserter = dbInserter;
         this.globalDocFrequencies = globalDocFrequencies;
+        this.processedPages = processedPages;
     }
 
     @Override
@@ -26,9 +29,8 @@ public class PageConsumer implements Runnable {
         try {
             while (true) {
                 Page page = queue.take();
-                // Check for poison pill (a marker page indicating end-of-stream)
+                // Check for poison pill to signal shutdown.
                 if (page == ParallelProcessingPipeline.POISON_PILL) {
-                    // Reinsert the poison pill for other consumers and exit
                     queue.put(page);
                     break;
                 }
@@ -36,8 +38,7 @@ public class PageConsumer implements Runnable {
                     String text = page.getRevision().getText();
                     Map<String, Integer> tf = computeTermFrequencies(text);
 
-                    // Update global document frequencies:
-                    // Only count a word once per document
+                    // Update global document frequencies (each word only once per document)
                     Set<String> uniqueWords = new HashSet<>(tf.keySet());
                     for (String word : uniqueWords) {
                         globalDocFrequencies.compute(word, (k, v) -> {
@@ -49,10 +50,12 @@ public class PageConsumer implements Runnable {
                             }
                         });
                     }
-                    // Create a model.PageAnalysis object and "insert" it into the database
+                    // Create a PageAnalysis instance and "insert" into the simulated database.
                     PageAnalysis analysis = new PageAnalysis(page.getTitle(), tf);
                     dbInserter.insert(analysis);
                 }
+                // Increment the shared progress counter after each page is processed.
+                processedPages.incrementAndGet();
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();

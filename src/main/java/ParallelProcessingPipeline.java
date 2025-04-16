@@ -1,5 +1,7 @@
 import model.Page;
+import model.PageAnalysis;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.*;
@@ -13,6 +15,9 @@ public class ParallelProcessingPipeline {
     private final ConcurrentHashMap<String, AtomicInteger> globalDocFrequencies;
     private final ExecutorService consumerPool;
 
+    // Shared counter for pages processed
+    private final AtomicInteger processedPages = new AtomicInteger(0);
+
     public ParallelProcessingPipeline(int consumerCount, int queueCapacity) {
         this.queue = new ArrayBlockingQueue<>(queueCapacity);
         this.dbInserter = new DatabaseInserter();
@@ -21,12 +26,18 @@ public class ParallelProcessingPipeline {
     }
 
     public void runPipeline(InputStream input) throws Exception {
-        // Wrap the input stream with BZip2 decompression so that you can read .xml.bz2 files.
+        // Create a scheduled executor to update the progress bar once per second.
+        ScheduledExecutorService progressScheduler = Executors.newSingleThreadScheduledExecutor();
+        progressScheduler.scheduleAtFixedRate(() -> {
+            // Use carriage return to rewrite the line rather than printing new lines each time.
+            System.out.print("\rPages processed: " + processedPages.get());
+        }, 0, 1, TimeUnit.SECONDS);
+
         try (BZip2CompressorInputStream bzIn = new BZip2CompressorInputStream(input)) {
             int consumerCount = ((ThreadPoolExecutor) consumerPool).getCorePoolSize();
-            // Start consumer threads.
+            // Start consumer threads, passing the shared processedPages counter.
             for (int i = 0; i < consumerCount; i++) {
-                consumerPool.submit(new PageConsumer(queue, dbInserter, globalDocFrequencies));
+                consumerPool.submit(new PageConsumer(queue, dbInserter, globalDocFrequencies, processedPages));
             }
 
             // Producer: parse pages from the decompressed input stream.
@@ -40,9 +51,11 @@ public class ParallelProcessingPipeline {
             for (int i = 0; i < consumerCount; i++) {
                 queue.put(POISON_PILL);
             }
-
             consumerPool.shutdown();
             consumerPool.awaitTermination(10, TimeUnit.MINUTES);
+        } finally {
+            progressScheduler.shutdownNow();
+            System.out.println("\nProcessing complete. Total pages processed: " + processedPages.get());
         }
     }
 

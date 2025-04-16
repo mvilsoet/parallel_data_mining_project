@@ -13,9 +13,8 @@ public class DatabaseInserter {
      */
     public synchronized boolean insert(PageAnalysis analysis) {
         insertedPages.add(analysis);
-        // Simulate an optimistic insert with a log statement.
-        System.out.println("Inserted page: " + analysis.getPageTitle() +
-                " with term frequencies: " + analysis.getTermFrequencies());
+
+        // An optimistic insert!
         return true;
     }
 
